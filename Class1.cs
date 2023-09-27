@@ -14,8 +14,14 @@ namespace Alcamoth
         public override IEnumerator OnLoadCoroutine()
         {
             EventManager.onUnpossess += EventManager_onUnpossess;
-            EventManager.OnPlayerSpawned += EventManager_OnPlayerSpawned;
+            EventManager.onPossess += EventManager_onPossess;
             return base.OnLoadCoroutine();
+        }
+
+        private void EventManager_onPossess(Creature creature, EventTime eventTime)
+        {
+            if(eventTime == EventTime.OnEnd)
+                Player.local.head.cam.farClipPlane *= 4;
         }
 
         private void EventManager_OnPlayerSpawned()
@@ -32,7 +38,7 @@ namespace Alcamoth
         {
             base.OnUnload();
             EventManager.onUnpossess -= EventManager_onUnpossess;
-            EventManager.OnPlayerSpawned -= EventManager_OnPlayerSpawned;
+            EventManager.onPossess -= EventManager_onPossess;
         }
     }
     public class SetTexture : StateMachineBehaviour
@@ -78,7 +84,7 @@ namespace Alcamoth
             {
                 creature.Teleport(exit.position, exit.rotation);
                 creature.locomotion.rb.velocity = Vector3.zero;
-                foreach (RagdollPart part in creature.ragdoll.parts) part.rb.velocity = Vector3.zero;
+                foreach (RagdollPart part in creature.ragdoll.parts) part.physicBody.velocity = Vector3.zero;
             }
         }
     }
